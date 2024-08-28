@@ -205,7 +205,11 @@ static void start_auth_query(PgSocket *client, const char *username)
 	res = 0;
 	buf = pktbuf_dynamic(512);
 	if (buf) {
-		pktbuf_write_ExtQuery(buf, auth_query, 2, username, client->db->name);
+		if (strstr(buf, "$2") != NULL) {
+		  pktbuf_write_ExtQuery(buf, auth_query, 2, username, client->db->name);
+		} else {
+		  pktbuf_write_ExtQuery(buf, auth_query, 1, username);
+		}
 		res = pktbuf_send_immediate(buf, client->link);
 		pktbuf_free(buf);
 		/*
